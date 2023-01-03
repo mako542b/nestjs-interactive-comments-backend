@@ -11,8 +11,11 @@ export class UserController {
     }
     
     @Post('register')
-    async addComment(@Body('login') login: string, @Body('password') password: string ) {
-        return await this.userService.newUser(login, password)
+    async addComment(
+        @Body('login') login: string, 
+        @Body('password') password: string,
+        @Body('avatar') avatar: string, ) {
+        return await this.userService.newUser(login, password, avatar)
     }
 
    

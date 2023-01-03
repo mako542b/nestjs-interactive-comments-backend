@@ -7,13 +7,13 @@ import { UserDocument } from './user.schema'
 export class UsersService {
     constructor(@InjectModel('UserSchema') private User: Model<UserDocument>){}
 
-    async findOne(login: string) : Promise<UserDocument | undefined> {
-        const user = await this.User.findOne({login})
-        return user
+    async findOne(login: string, returnPassword: boolean = false) : Promise<UserDocument | undefined> {
+        if(returnPassword) return await this.User.findOne({login}).select('password')
+        return await this.User.findOne({login})
     }
 
-    async newUser(login:string, password: string) {
-        const newUser = new this.User({login, password})
+    async newUser(login:string, password: string, avatar: string) {
+        const newUser = new this.User({login, password, avatar})
         return await newUser.save()
     }
 
