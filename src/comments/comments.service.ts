@@ -18,7 +18,9 @@ export class CommentsService {
     }
 
     async getAllSectionComments(section:string) {
-        return await this.Comment.find({section}).populate('user').exec()
+        let comments = await this.Comment.find({section}).populate('user').exec()
+            comments = comments.filter(comment => comment.user)
+        return comments
     }
 
     async handleRating(id: string, rating: rateInterface) {
