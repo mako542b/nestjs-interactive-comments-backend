@@ -4,7 +4,6 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard, JwtRefreshAuthGuard } from './jwt-auth.guard';
 import { Response } from 'express';
-// import { Response } from 'express'
 
 @Controller('auth')
 export class AuthController {
@@ -27,7 +26,8 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Get('refresh')
   async refreshToken(@Request() req) {
-    return this.authService.login(req.user)
+    const token = await this.authService.login(req.user)
+    return token
   }
 
 
