@@ -10,6 +10,7 @@ import { rateInterface } from './interfaces';
 export class CommentsController {
     constructor(private commentsService: CommentsService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post('create')
     async newMessage(@Body()commentInfo: CommentDto) {
         return await this.commentsService.createComment(commentInfo)
@@ -21,16 +22,19 @@ export class CommentsController {
         return await this.commentsService.getAllSectionComments(section)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Patch('rating')
     async handleRating(@Body('commentId') commentId:string, @Body('rating') rate: rateInterface) {
         return await this.commentsService.handleRating(commentId, rate)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete(':id')
     async deleteCommet(@Param('id') id:string) {
         return await this.commentsService.deleteComment(id)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Patch(':id')
     async editComment(@Param('id') id:string, @Body('newContent') newContent: string) {
         return await this.commentsService.editComment(id, newContent)
