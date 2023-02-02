@@ -4,6 +4,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard, JwtRefreshAuthGuard } from './jwt-auth.guard';
 import { Response } from 'express';
+import { get } from 'http';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,8 @@ export class AuthController {
   @Post('login')
   async login(@Request() req, @Res({passthrough:true}) res: Response){
     const token = await this.authService.login(req.user)
-    res.cookie('refresh', token.access_token, {expires: new Date(Date.now() + 90000000), sameSite:'none'})
+    const refreshToken = await this.authService.createRefreshToken(req.user)
+    res.cookie('refresh', refreshToken, {expires: new Date(Date.now() + 90000000), sameSite:'none'})
     return token
   }
   
@@ -30,6 +32,10 @@ export class AuthController {
     return token
   }
 
-
+  @UseGuards(JwtRefreshAuthGuard)
+  @Get('logout')
+  async logout(@Request() req) {
+    return await this.authService.logout(req.user)
+  }
   
 }
