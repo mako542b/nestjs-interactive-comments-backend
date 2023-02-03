@@ -1,9 +1,8 @@
-import { Controller, Post, Get, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, Delete, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CommentDto } from './CommentDto';
 import { CommentsService } from './comments.service';
 import { rateInterface } from './interfaces';
-// @UseGuards(JwtAuthGuard)
 
 
 @Controller('comments')
@@ -12,8 +11,12 @@ export class CommentsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('create')
-    async newMessage(@Body()commentInfo: CommentDto) {
-        return await this.commentsService.createComment(commentInfo)
+    async newMessage(
+        @Body()commentInfo: CommentDto,
+        @Request() req
+    ) {
+        const userId = req.user._id?.toString()
+        return await this.commentsService.createComment(commentInfo, userId)
     }
 
     @UseGuards(JwtAuthGuard)
@@ -24,19 +27,33 @@ export class CommentsController {
 
     @UseGuards(JwtAuthGuard)
     @Patch('rating')
-    async handleRating(@Body('commentId') commentId:string, @Body('rating') rate: rateInterface) {
-        return await this.commentsService.handleRating(commentId, rate)
+    async handleRating(
+        @Body('commentId') commentId:string, 
+        @Body('rating') rate: rateInterface,
+        @Request() req
+    ) {
+        const userId = req.user._id?.toString()
+        return await this.commentsService.handleRating(commentId, rate, userId)
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
-    async deleteCommet(@Param('id') id:string) {
-        return await this.commentsService.deleteComment(id)
+    async deleteCommet(
+        @Param('id') id: string,
+        @Request() req
+    ) {
+        const userId = req.user._id?.toString()
+        return await this.commentsService.deleteComment(id, userId)
     }
 
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    async editComment(@Param('id') id:string, @Body('newContent') newContent: string) {
-        return await this.commentsService.editComment(id, newContent)
+    async editComment(
+        @Param('id') id:string, 
+        @Body('newContent') newContent: string,
+        @Request() req
+    ) {
+        const userId = req.user._id?.toString()
+        return await this.commentsService.editComment(id, newContent, userId)
     }
 }
